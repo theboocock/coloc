@@ -275,7 +275,7 @@ process.dataset <- function(d, suffix) {
 ##' @author Claudia Giambartolomei, Chris Wallace
 ##' @export
 coloc.abf <- function(dataset1, dataset2, MAF=NULL, 
-                      p1=1e-4, p2=1e-4, p12=1e-5) {
+                      p1=1e-4, p2=1e-4, p12=1e-5,  correlation=0) {
 
   if(!is.list(dataset1) || !is.list(dataset2))
     stop("dataset1 and dataset2 must be lists.")
@@ -283,9 +283,16 @@ coloc.abf <- function(dataset1, dataset2, MAF=NULL,
     dataset1$MAF <- MAF
   if(!("MAF" %in% names(dataset2)) & !is.null(MAF))
     dataset2$MAF <- MAF
-  
-  df1 <- process.dataset(d=dataset1, suffix="df1")
-  df2 <- process.dataset(d=dataset2, suffix="df2")
+  if(correlation == 0){ 
+      df1 <- process.dataset(d=dataset1, suffix="df1")
+      df2 <- process.dataset(d=dataset2, suffix="df2")
+  }else{
+      dfs  <- process.datasets(d1=dataset1, d2=dataset2)
+      df1  <- df[1]
+      df2  <- df[2]
+      colnames(df1)  <- paste(colnames(df1), "df1", sep='.')
+      colnames(df2)  <- paste(colnames(df2), "df2", sep='.')
+  }
   merged.df <- merge(df1,df2)
 
    if(!nrow(merged.df))
